@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="공장·플랜트 작업·안전관리 통합 웹서비스 구축 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; /* 12pt minimum base */ }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem; /* 16px = 12pt */
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+
+    /* ─── doc-content typography ─── */
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+    .doc-content .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    .doc-content .table-wrap table { margin-bottom: 0; min-width: 560px; }
+
+    /* ─── 12pt (16px) minimum font size ─── */
+    .text-xs { font-size: 1rem !important; }
+
+    /* ─── Timeline ─── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+
+    /* ─── Page sections ─── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ─── Mobile sidebar toggle ─── */
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>공장·플랜트 작업·안전관리 통합 웹서비스 구축 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <!-- ─── Header ─── -->
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">공장·플랜트 작업·안전관리 통합 웹서비스 구축</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <!-- ─── Sidebar ─── -->
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <!-- ─── Main Content ─── -->
+      <main class="min-w-0">
+
+        <!-- ═══════════════ PAGE: Home ═══════════════ -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">공장·플랜트 작업·안전관리 통합 웹서비스 구축</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">작업 등록 → 카카오 알림톡 발송 → 작업자 모바일 안전 확인·개인 승인 → 업체 작업관리자 승인 → 작업 시작 → 완료 보고까지의 기록이 자동으로 남는 웹서비스를 90일 안에 구축합니다. 가장 우려하신 법정 일지·점검서류는 <strong>양식의 모든 항목에 번호를 매겨 화면·DB·엑셀 출력·테스트까지 1:1로 추적하는 방식</strong>으로 검증해, "이 항목이 빠져 있다"는 상황을 구조적으로 막습니다. 납품 후 월 단위 서버 운영까지 함께 맡습니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">개발 22,000,000원 (VAT 별도)</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">운영 월 550,000원</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">90일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">웹 SaaS · 업무자동화</span>
+              <a href="https://www.wishket.com/project/158930/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">분석, 법정 서류 QC·테스트 계획, 기술 스택·서버 구성 제안</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">개발·납품(일회성) / 서버 운영(월) 분리 견적, 산정 가정</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">5종 사용자, 작업·승인 흐름, 기능·비기능 요구사항</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">90일 단계별 마일스톤 및 검수 기준</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">승인 워크플로우·현장 기록·규제 양식 경험과 담당 범위</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">90일</p><p class="mt-1 text-sm text-slate-500">제안 기간</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">73 M/D</p><p class="mt-1 text-sm text-slate-500">총 공수</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">5종</p><p class="mt-1 text-sm text-slate-500">역할별 권한</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">100%</p><p class="mt-1 text-sm text-slate-500">서류 항목 추적</p></div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: 프로젝트 소개 ═══════════════ -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>관리자가 작업을 등록하면 작업자에게 알림톡이 나가고, 작업자가 휴대전화에서 안전 내용을 확인하고 완료 보고를 하면 그 기록이 자동으로 남는 흐름을 90일 안에 완성합니다. 법정 일지·점검서류는 항목 단위로 추적·검증하고, 납품 후 월 단위 서버 운영까지 맡습니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <div class="table-wrap"><table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/158930/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">공장·플랜트 작업·안전관리 통합 웹서비스 구축</a></td></tr>
+                <tr><td>카테고리</td><td>웹 SaaS·솔루션 · 업무자동화 · 웹사이트 구축</td></tr>
+                <tr><td>개발·납품 비용 (일회성)</td><td>22,000,000원 (VAT 별도)</td></tr>
+                <tr><td>서버 운영 비용 (월)</td><td>550,000원 (VAT 별도) — 인프라 이용료 약 150,000원 + 운영 관리비 400,000원</td></tr>
+                <tr><td>제안 기간</td><td>90일 (계약 후 즉시 착수)</td></tr>
+                <tr><td>핵심 기술</td><td>Python(Django REST Framework), React(TypeScript), PostgreSQL, AWS 서울 리전, 카카오 알림톡</td></tr>
+              </table></div>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>사용자·권한</strong>: 관리자·작업관리자·안전관리자·협력업체·작업자 5종 역할, 고객사·현장별 정보와 권한 분리 (멀티테넌트)</li>
+                <li><strong>사용 환경</strong>: 관리자는 PC 웹, 작업자는 카카오 알림톡 링크로 여는 모바일 웹 (앱 설치 없음)</li>
+                <li><strong>핵심 흐름</strong>: 작업 등록·배정 → 알림톡(작업 내용 + 착용 안전장비) → 작업자 안전 확인·개인별 승인 → 업체 작업관리자 승인 → 작업 시작 → 완료 보고 → 기록 자동 보관</li>
+                <li><strong>작업허가</strong>: 협력업체가 보수작업 신청서·작업자 명단·위험성평가 제출 → 담당자 검토 → 승인 또는 보완 요청</li>
+                <li><strong>안전서류</strong>: 작업 전 안전회의(TBM), 교육, 점검 일지와 확인 기록 보관, 엑셀·파일 묶음(ZIP) 내려받기</li>
+                <li><strong>기타</strong>: 긴급 보수작업 접수·담당자 알림·조치 결과 기록, 공지사항·비상연락망, 진행 현황 대시보드</li>
+                <li><strong>인프라·운영</strong>: 테스트·운영 서버 구성, 납품 이후 월 단위 서버 운영 (하루 약 100명)</li>
+                <li><strong>결과물</strong>: 전체 소스코드(발주사 소유), DB 스키마, 화면 설계서, 기본 운영 안내 문서, 테스트·운영 서버 배포</li>
+                <li><strong>우선순위</strong>: 1순위 산출물 완성도 → 2순위 금액 → 3순위 일정 준수 / 가장 큰 우려: 법정 일지·서류 항목 누락</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+
+              <h3>1. 참고 서비스(어깨동무M) 흐름 분석 결과 반영</h3>
+              <ul>
+                <li>참고하신 서비스는 카카오톡 기반으로 앱 설치 없이 작업 알림·안전 공지·출입 확인을 전달하고, 협력업체 작업지시서도 서면·이메일 대신 시스템으로 발부·수령해 이력을 통합 관리하는 구조로 알려져 있습니다.</li>
+                <li>이번 서비스도 같은 원칙으로 <strong>"작업자는 링크 하나로 끝, 관리자는 PC에서 전체 이력 확인"</strong>을 목표로 설계합니다. 작업자 화면은 큰 버튼과 단계형 체크(안전장비 착용 확인 → 위험 요소 확인 → 서명)로 장갑을 낀 현장에서도 쓰기 쉽게 만듭니다.</li>
+                <li>작업자는 별도 회원가입 없이 <strong>일회용 보안 링크 + 휴대전화 뒷자리 확인</strong>으로 본인을 확인하고, 확인·서명 시각과 단말 정보가 자동 기록되어 사후 증빙으로 쓸 수 있습니다.</li>
+              </ul>
+
+              <h3>2. 법정 일지·점검서류 QC와 테스트 계획 (가장 중요하게 보신 부분)</h3>
+              <p>"나중에 이 항목이 빠져 있다"는 상황은 대부분 <strong>양식 → 화면 → 저장 → 출력</strong>으로 옮기는 과정에서 사람이 손으로 옮기다 생깁니다. 이 과정을 추적표와 자동 검사로 바꿔 누락을 구조적으로 막습니다.</p>
+              <div class="table-wrap"><table>
+                <tr><th>단계</th><th>방법</th><th>산출물</th></tr>
+                <tr><td>① 항목 추적표 (RTM)</td><td>전달받은 모든 양식의 모든 항목에 고유 번호(예: TBM-012)를 부여하고, 각 항목이 <strong>화면 필드 · DB 컬럼 · 엑셀 출력 셀 · 테스트 케이스</strong> 중 어디에 대응하는지 1:1로 연결합니다.</td><td>서류 항목 추적표 (엑셀)</td></tr>
+                <tr><td>② 설계 단계 승인</td><td>Day 21에 추적표와 화면 설계서를 함께 검토받습니다. 안전관리 담당자분이 항목별로 확인·서명하면 개발 기준선으로 확정합니다.</td><td>항목 매핑 승인본</td></tr>
+                <tr><td>③ 양식을 데이터로 관리</td><td>일지·서류 항목을 코드에 직접 박지 않고 <strong>양식 정의(항목명·입력 유형·필수 여부·선택지·작성 주체·서명 필요 여부)</strong>로 관리합니다. 화면·저장·엑셀 출력이 모두 같은 정의에서 만들어지므로 한 곳에만 있고 다른 곳에 빠지는 일이 생기지 않습니다.</td><td>양식 정의 파일 (버전 관리)</td></tr>
+                <tr><td>④ 항목 커버리지 자동 테스트</td><td>코드가 바뀔 때마다 "정의된 모든 항목이 입력 화면에 있는가 / 저장되는가 / 엑셀에 출력되는가 / 필수 항목 없이 제출이 막히는가"를 자동으로 검사합니다. 하나라도 빠지면 배포가 중단됩니다.</td><td>CI 자동 테스트</td></tr>
+                <tr><td>⑤ 출력물 대조 테스트</td><td>샘플 데이터로 만든 엑셀·ZIP 출력물을 원본 양식과 셀 단위로 비교합니다. 첨부자료(사진·서명)가 묶음 파일에 빠짐없이 들어갔는지도 함께 확인합니다.</td><td>출력 대조 리포트</td></tr>
+                <tr><td>⑥ 단계별 검수</td><td>Day 75 베타 때 <strong>항목 커버리지 리포트 v1</strong>, Day 90 납품 때 <strong>최종 리포트(항목 100% 대응 확인)</strong>를 함께 제출합니다. 리포트는 양식별로 "정의 항목 수 / 구현 항목 수 / 테스트 통과 수"를 보여 줍니다.</td><td>항목 커버리지 리포트</td></tr>
+                <tr><td>⑦ 기록 무결성</td><td>서명·승인 완료된 기록은 수정할 수 없고, 정정이 필요하면 정정 이력(누가·언제·무엇을·왜)으로 남깁니다. 양식이 바뀌어도 과거 기록은 작성 당시 양식 버전 그대로 보관합니다.</td><td>변경 이력 테이블</td></tr>
+              </table></div>
+              <p>추가로 현장 시범 운영(Day 76–83) 기간에 실제 작업 1~2건을 처음부터 끝까지 시스템으로 처리해 보고, 종이 서류와 나란히 비교하는 대조 점검을 진행합니다.</p>
+
+              <h3>3. [미정 범위 1] 안전 일지·점검서류 양식 전달 방식 — 권장안과 비용 차이</h3>
+              <ul>
+                <li><strong>권장: 현재 쓰시는 원본 양식(엑셀·한글·스캔 무엇이든) + 저희가 드리는 "항목 정의서" 엑셀 템플릿</strong>을 함께 주시는 방식입니다. 템플릿 열: 양식명 / 항목명 / 입력 유형(텍스트·선택·체크·날짜·사진·서명) / 필수 여부 / 선택지 / 작성 주체(작업자·작업관리자·안전관리자 등) / 근거 법령·사내 규정 / 보존 기간.</li>
+                <li>항목 정의서가 채워지면 그대로 양식 정의 파일로 변환되어 개발이 빨라지고, 추적표의 기준이 됩니다. 작성은 착수 2주 차 워크숍에서 저희가 함께 채워 드립니다.</li>
+              </ul>
+              <div class="table-wrap"><table>
+                <tr><th>전달 방식</th><th>내용</th><th>비용</th></tr>
+                <tr><td><strong>A. 원본 양식 + 항목 정의서 (권장)</strong></td><td>양식 10종(TBM, 안전교육, 일일·정기 점검, 작업허가 신청서, 작업자 명단, 위험성평가, 긴급작업 조치 기록 등) 이내</td><td>기본 견적 포함</td></tr>
+                <tr><td>B. 원본 양식만 전달</td><td>저희가 원본에서 항목을 추출·정리하고 담당자 확인을 받는 작업 추가</td><td>양식 1종당 +150,000원</td></tr>
+                <tr><td>C. 양식 10종 초과</td><td>추가 양식 정의·화면·출력·테스트</td><td>양식 1종당 +200,000~400,000원 (항목 수 기준)</td></tr>
+                <tr><td>옵션. 원본 레이아웃 그대로 PDF 출력</td><td>엑셀 출력(기본) 외에 종이 양식과 같은 모양의 인쇄용 PDF</td><td>양식 1종당 +300,000원</td></tr>
+              </table></div>
+
+              <h3>4. [미정 범위 2] 기술 스택 제안과 선택 이유</h3>
+              <div class="table-wrap"><table>
+                <tr><th>영역</th><th>제안</th><th>선택 이유</th></tr>
+                <tr><td>백엔드</td><td><strong>Python · Django + Django REST Framework</strong></td><td>선호하신 Python 계열 중 인증·권한·DB 마이그레이션·관리 기능이 기본 내장된 가장 보편적인 프레임워크입니다. 역할별 권한과 서류·이력 데이터가 많은 업무 시스템에 적합하고, 국내 개발자 수급이 쉬워 운영 이관 후 유지보수가 편합니다.</td></tr>
+                <tr><td>프론트엔드</td><td><strong>React + TypeScript (Vite)</strong></td><td>말씀하신 React 방향 그대로. 관리자 PC 화면과 작업자 모바일 화면을 하나의 코드베이스에서 화면 경로로 나눠 관리 부담을 줄입니다.</td></tr>
+                <tr><td>DB</td><td><strong>PostgreSQL</strong></td><td>양식 정의·서명 이력 같은 유연한 데이터(JSON)와 정형 데이터를 함께 안정적으로 다룹니다.</td></tr>
+                <tr><td>비동기 처리</td><td>Celery + Redis</td><td>알림톡 발송·재발송, 엑셀/ZIP 생성처럼 시간이 걸리는 작업을 화면과 분리해 처리합니다.</td></tr>
+                <tr><td>인프라</td><td>AWS 서울 리전 + Docker + GitHub Actions</td><td>테스트·운영 서버를 같은 구성으로 재현하고, 문서만으로 재배포할 수 있게 합니다.</td></tr>
+              </table></div>
+              <p>공고 관련 기술에 Flask가 있어 비교 의견도 드립니다. Flask로도 같은 기능을 만들 수 있지만 인증·권한·관리 기능을 직접 조립해야 해 코드량이 늘고 유지보수자마다 구조가 달라지기 쉽습니다. <strong>Flask를 원하시면 같은 금액으로 진행 가능</strong>하며, 미팅에서 최종 확정하겠습니다. Node.js·Java는 가능하지만 Python 선호를 고려해 권하지 않습니다.</p>
+
+              <h3>5. [미정 범위 3] 서버 구성 제안 (하루 약 100명 기준)</h3>
+              <div class="table-wrap"><table>
+                <tr><th>구성안</th><th>내용</th><th>월 인프라 이용료(예상)</th><th>의견</th></tr>
+                <tr><td><strong>A. 표준형 (권장)</strong></td><td>운영: EC2 t3.small(Docker: 웹·API·작업 큐) + RDS PostgreSQL(자동 백업 7일) + S3(첨부·버전 관리) + CloudWatch 모니터링 / 테스트: EC2 t3.micro 1대</td><td>약 150,000원</td><td>DB를 별도 관리형으로 두어 백업·복구가 안전하고, 이용자 증가 시 서버 크기만 올리면 됩니다.</td></tr>
+                <tr><td>B. 절감형</td><td>운영·테스트 각 1대에 앱·DB 함께 설치 (Lightsail 등)</td><td>약 60,000원</td><td>저렴하지만 서버 장애 시 DB까지 함께 영향, 백업 복구 시간이 깁니다. 법정 서류 보관 시스템에는 권하지 않습니다.</td></tr>
+                <tr><td>C. 고가용형</td><td>컨테이너 서비스(ECS) 2대 이상 + DB 이중화(Multi-AZ)</td><td>약 400,000원 이상</td><td>무중단에 가깝지만 100명 규모에는 과합니다. 다수 고객사로 확장 시 전환을 권합니다.</td></tr>
+              </table></div>
+
+              <h3>6. 카카오 알림톡 연동</h3>
+              <ul>
+                <li>알림톡 발송 대행사(예: NHN Cloud, 솔라피 등) API로 연동하며, 작업 배정 시 <strong>작업 내용 + 착용 안전장비 + 확인 링크</strong>를 발송합니다. 발송·수신·열람 이력이 남습니다.</li>
+                <li>발송 실패 시 자동 재시도 후 문자(SMS) 대체 발송, 관리자 화면에서 미확인 작업자를 확인하고 재발송할 수 있습니다.</li>
+                <li>카카오 비즈니스 채널·발신 프로필 등록과 템플릿 검수에 영업일 기준 수일이 걸리므로 <strong>착수 1~2주 차에 신청</strong>을 안내드리고, 그동안 테스트 발송으로 개발합니다. 발송료·대행사 이용료는 견적에서 제외합니다.</li>
+              </ul>
+
+              <h3>7. 공고만으로 판단이 어려워 확인이 필요한 부분</h3>
+              <ul>
+                <li>양식 종류와 개수, 각 양식의 작성 주체·서명 필요 여부, 보존 기간 (기본 견적은 10종 기준)</li>
+                <li>작업자 본인 확인 수준: 링크 + 휴대전화 뒷자리 확인으로 충분한지, 별도 본인인증(PASS 등)이 필요한지</li>
+                <li>작업자 정보 등록 방식 (협력업체가 직접 등록 / 관리자가 엑셀 일괄 등록), 외국인 작업자 다국어 필요 여부</li>
+                <li>"업체 작업관리자 승인" 이후 작업 시작 조건 — 전원 개인 승인 완료가 필수인지, 일부 미확인 시 예외 처리 규칙</li>
+                <li>작업허가 승인 단계 수 (담당자 1단계 / 안전관리자 → 현장 책임자 다단계)</li>
+                <li>긴급작업 알림 대상과 채널 (알림톡 / 문자 / 둘 다), 야간·주말 알림 여부</li>
+                <li>고객사 납품 이후 운영 시 고객사 보안 정책 (사내망 설치 요구, 데이터 보관 위치, 보안 점검 여부)</li>
+                <li>AWS·도메인·카카오 채널 계정 명의 (권장: 처음부터 발주사 명의로 생성 후 권한 위임)</li>
+              </ul>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Python</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Django REST Framework</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">React</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Tailwind CSS</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">PostgreSQL</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Celery · Redis</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">카카오 알림톡</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">AWS (EC2 · RDS · S3)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Docker</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">GitHub Actions</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">주 1회 정기 미팅</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">주간 진행 보고서</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">서류 양식 워크숍</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">카카오톡 / Slack</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub Issues</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">테스트 서버 상시 공개</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: 견적서 ═══════════════ -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>공고의 요청대로 개발·납품 비용(일회성)과 서버 운영 비용(월)을 구분하고, 산정에 사용한 가정을 함께 적었습니다. 카카오톡·알림톡 발송료와 관련 서비스 이용료는 제외했습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <div class="table-wrap"><table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>공장·플랜트 작업·안전관리 통합 웹서비스 구축</td></tr>
+                <tr><td>개발·납품 비용 (일회성)</td><td><strong>22,000,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>서버 운영 비용 (월)</td><td><strong>550,000원 (VAT 별도)</strong> — 인프라 이용료 약 150,000원(실비) + 운영 관리비 400,000원</td></tr>
+                <tr><td>예상 개발 기간</td><td>90일 (계약 후 즉시 착수)</td></tr>
+                <tr><td>부가세</td><td>모든 금액 VAT 별도</td></tr>
+                <tr><td>하자보수</td><td>최종 검수 완료일부터 <strong>3개월 무상</strong> (개발 범위 내 결함 수정)</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table></div>
+
+              <h2>1. 개발·납품 비용 (일회성)</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획</td><td>요구사항 정의, 업무 흐름도, 화면 설계서(관리자 PC·작업자 모바일), 서류 항목 추적표(RTM)</td><td>1식</td><td>-</td><td>2,400,000원</td></tr>
+                  <tr><td>디자인</td><td>디자인 시스템, 관리자 PC 화면, 작업자·협력업체 모바일 웹 화면</td><td>1식</td><td>-</td><td>2,700,000원</td></tr>
+                  <tr><td>프론트엔드</td><td>관리자 PC 웹 (대시보드, 고객사·현장·협력업체·작업자 관리, 작업 등록·배정, 작업허가 검토, 서류 조회·내려받기, 긴급작업, 공지·비상연락망)</td><td>1식</td><td>-</td><td>4,200,000원</td></tr>
+                  <tr><td>프론트엔드</td><td>작업자·협력업체 모바일 웹 (링크 진입·본인 확인, 안전 확인·개인 승인, 완료 보고, 작업허가 신청, TBM·교육·점검 일지, 긴급작업 접수)</td><td>1식</td><td>-</td><td>2,700,000원</td></tr>
+                  <tr><td>백엔드</td><td>로그인·5종 역할 권한, 고객사·현장별 데이터 분리</td><td>1식</td><td>-</td><td>1,800,000원</td></tr>
+                  <tr><td>백엔드</td><td>작업 등록·배정·승인 흐름, 작업허가 신청·검토·보완 요청, 긴급작업·담당자 알림</td><td>1식</td><td>-</td><td>2,400,000원</td></tr>
+                  <tr><td>백엔드</td><td>안전일지·점검서류 양식 정의·버전 관리, 서명·승인 이력, 엑셀·ZIP 내려받기</td><td>1식</td><td>-</td><td>2,100,000원</td></tr>
+                  <tr><td>외부 연동</td><td>카카오 알림톡 연동 (템플릿, 발송 큐, 발송 이력, 재발송·문자 대체)</td><td>1식</td><td>-</td><td>900,000원</td></tr>
+                  <tr><td>인프라</td><td>테스트 서버·운영 서버 구성, CI/CD, 백업·모니터링 설정, 운영 배포</td><td>1식</td><td>-</td><td>1,200,000원</td></tr>
+                  <tr><td>QA·문서</td><td>서류 항목 커버리지 자동 테스트·출력 대조, 역할별 권한 테스트, 현장 시범 운영 지원, 기본 운영 안내 문서, 인수인계</td><td>1식</td><td>-</td><td>1,600,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>22,000,000원</th></tr>
+                </tfoot>
+              </table></div>
+
+              <h2>2. 서버 운영 비용 (월)</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>구분</th><th>내용</th><th>월 금액 (VAT 별도)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>인프라 이용료 (실비)</td><td>운영 EC2 t3.small, 테스트 EC2 t3.micro, RDS PostgreSQL(자동 백업 7일), S3 저장공간(첨부·백업), CloudWatch 모니터링, 도메인·SSL</td><td>약 150,000원 (환율·사용량에 따라 실비 정산)</td></tr>
+                  <tr><td>운영 관리비</td><td>상시 모니터링·장애 알림, 일일 DB 백업 확인, 월 1회 백업 복구 점검, OS·보안 패치, 월간 운영 리포트, 월 8시간 이내 경미한 수정(문구·설정·데이터 정정)</td><td>400,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="2">합계</th><th>약 550,000원</th></tr>
+                </tfoot>
+              </table></div>
+
+              <h3>장애 대응 범위</h3>
+              <div class="table-wrap"><table>
+                <tr><th>등급</th><th>예시</th><th>대응</th></tr>
+                <tr><td>긴급</td><td>서비스 접속 불가, 알림톡 전체 발송 중단, 데이터 손실 우려</td><td>영업일 09–18시: 1시간 내 확인, 4시간 내 조치 착수 / 야간·주말: 모니터링 알림 수신 시 최선 대응</td></tr>
+                <tr><td>일반</td><td>일부 기능 오류, 특정 화면 오동작</td><td>영업일 1일 내 확인, 3영업일 내 조치</td></tr>
+                <tr><td>범위 외</td><td>신규 기능 추가, 양식 신설, 화면 개편</td><td>별도 견적 (월 수정 시간 내 처리 가능한 경우 포함)</td></tr>
+              </table></div>
+
+              <h2>3. 견적 산정 가정</h2>
+              <div class="table-wrap"><table>
+                <tr><th>항목</th><th>가정</th></tr>
+                <tr><td>일 이용자</td><td>약 100명 (관리자·작업관리자·안전관리자 10~15명 + 협력업체·작업자 85~90명)</td></tr>
+                <tr><td>동시접속</td><td>평상시 10명 내외, <strong>작업 전 TBM 시간대(아침 1시간) 최대 30~40명</strong> 집중을 기준으로 서버 크기 산정</td></tr>
+                <tr><td>작업 건수</td><td>하루 30~50건 작업 등록·배정, 알림톡 하루 약 200건 (발송료 제외)</td></tr>
+                <tr><td>자료 보관량</td><td>작업당 사진 평균 5장(장당 약 1MB, 업로드 시 자동 압축) + 서류·서명 → 월 약 5~8GB, 연 약 100GB 이내. 오래된 첨부는 저비용 저장 등급으로 자동 이동</td></tr>
+                <tr><td>보존 기간</td><td>서류·기록은 최소 3년 이상 보관을 기준으로 설계 (실제 기간은 양식별 확인)</td></tr>
+                <tr><td>고객사·현장</td><td>초기 고객사 1곳, 현장 5곳 이내. 구조는 다수 고객사 확장이 가능하도록 설계</td></tr>
+                <tr><td>안전서류 양식</td><td>10종 이내, 원본 양식 + 항목 정의서로 전달받는 경우 (초과·추출 작업은 프로젝트 소개 3번의 단가표 적용)</td></tr>
+                <tr><td>브라우저</td><td>관리자: PC Chrome·Edge 최신 / 작업자: 안드로이드·iOS 카카오톡 인앱 브라우저 및 기본 브라우저</td></tr>
+              </table></div>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>전체 소스코드 (발주사 소유, 발주사 명의 저장소로 이관)</li>
+                <li>DB 스키마(ERD·테이블 정의서), 화면 설계서, 기본 운영 안내 문서, API 명세서</li>
+                <li>서류 항목 추적표(RTM)와 항목 커버리지 리포트</li>
+                <li>테스트 서버·운영 서버 구성 및 배포</li>
+                <li>알림톡 연동 기능 개발비</li>
+                <li>최종 검수 완료일부터 3개월 무상 하자보수</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>카카오톡·알림톡 발송료, 발송 대행사 이용료, 문자 발송료</li>
+                <li>도메인 구매 비용</li>
+                <li>양식 10종 초과분, 원본 레이아웃 PDF 출력 (옵션)</li>
+                <li>네이티브 앱(iOS·Android) 개발, 외부 시스템(ERP·출입통제) 연동</li>
+                <li>외부 전문기관 보안 진단·인증</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: 공수계산서 ═══════════════ -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>기능별 개발 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <div class="table-wrap"><table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획/설계</td><td>8 M/D</td><td>11.0%</td></tr>
+                <tr><td>UI/UX 디자인</td><td>9 M/D</td><td>12.3%</td></tr>
+                <tr><td>프론트엔드 (관리자 PC)</td><td>14 M/D</td><td>19.2%</td></tr>
+                <tr><td>프론트엔드 (모바일 웹)</td><td>9 M/D</td><td>12.3%</td></tr>
+                <tr><td>백엔드</td><td>21 M/D</td><td>28.8%</td></tr>
+                <tr><td>알림톡 연동</td><td>3 M/D</td><td>4.1%</td></tr>
+                <tr><td>인프라/배포</td><td>4 M/D</td><td>5.5%</td></tr>
+                <tr><td>QA/문서</td><td>5 M/D</td><td>6.8%</td></tr>
+                <tr><th>합계</th><th>73 M/D</th><th>100%</th></tr>
+              </table></div>
+
+              <h2>기능별 상세 공수</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="4">기획/설계</td><td>요구사항 정의·업무 흐름도 (작업·승인·작업허가·긴급작업)</td><td>기획</td><td>2</td></tr>
+                  <tr><td>화면 설계서 — 관리자 PC</td><td>기획</td><td>2.5</td></tr>
+                  <tr><td>화면 설계서 — 작업자·협력업체 모바일</td><td>기획</td><td>1.5</td></tr>
+                  <tr><td>서류 항목 추적표(RTM)·양식 항목 정의 워크숍</td><td>기획/QA</td><td>2</td></tr>
+                  <tr><td rowspan="3">UI/UX 디자인</td><td>디자인 시스템·공통 컴포넌트</td><td>디자인</td><td>1.5</td></tr>
+                  <tr><td>관리자 PC 화면</td><td>디자인</td><td>4.5</td></tr>
+                  <tr><td>작업자·협력업체 모바일 화면 (현장 사용성: 큰 버튼, 단계형 체크)</td><td>디자인</td><td>3</td></tr>
+                  <tr><td rowspan="8">관리자 PC 웹</td><td>로그인·역할별 메뉴</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td>진행 현황 대시보드 (현장별 작업 상태, 미확인 작업자, 긴급작업)</td><td>프론트엔드</td><td>2</td></tr>
+                  <tr><td>고객사·현장·협력업체·작업자 관리 (엑셀 일괄 등록)</td><td>프론트엔드</td><td>2.5</td></tr>
+                  <tr><td>작업 등록·배정·진행 관리 (안전장비 지정)</td><td>프론트엔드</td><td>2.5</td></tr>
+                  <tr><td>작업허가 검토·승인·보완 요청</td><td>프론트엔드</td><td>1.5</td></tr>
+                  <tr><td>안전일지·점검서류 조회·검색·엑셀/ZIP 내려받기</td><td>프론트엔드</td><td>2</td></tr>
+                  <tr><td>긴급작업 접수 현황·조치 결과</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td>공지사항·비상연락망 관리</td><td>프론트엔드</td><td>1.5</td></tr>
+                  <tr><td rowspan="7">모바일 웹</td><td>알림톡 링크 진입·본인 확인</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td>작업 상세·안전장비 확인·안전 내용 확인·개인 승인(서명)</td><td>프론트엔드</td><td>2</td></tr>
+                  <tr><td>업체 작업관리자 승인·작업 시작</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td>완료 보고 (사진 첨부·자동 압축)</td><td>프론트엔드</td><td>1.5</td></tr>
+                  <tr><td>협력업체 작업허가 신청 (신청서·작업자 명단·위험성평가)</td><td>프론트엔드</td><td>1.5</td></tr>
+                  <tr><td>TBM·교육·점검 일지 작성 (양식 정의 기반 동적 화면)</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td>긴급작업 접수·공지·비상연락망 조회</td><td>프론트엔드</td><td>1</td></tr>
+                  <tr><td rowspan="3">인증·권한</td><td>관리자 계정 로그인, 작업자 일회용 링크 인증</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td>5종 역할 권한(RBAC)</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td>고객사·현장별 데이터 분리 (멀티테넌트)</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td rowspan="4">작업·허가 흐름</td><td>기준정보 API (고객사·현장·협력업체·작업자·안전장비)</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td>작업 상태 흐름 (배정→개인 확인→업체 승인→진행→완료)</td><td>백엔드</td><td>2.5</td></tr>
+                  <tr><td>작업허가 신청·검토·승인·보완 요청·재제출</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td>긴급작업 접수·담당자 알림·조치 기록</td><td>백엔드</td><td>1.5</td></tr>
+                  <tr><td rowspan="3">안전서류</td><td>양식 정의 엔진 (항목·필수 여부·버전 관리)</td><td>백엔드</td><td>3</td></tr>
+                  <tr><td>서명·승인 이력 (수정 불가, 정정 이력)</td><td>백엔드</td><td>1.5</td></tr>
+                  <tr><td>엑셀·ZIP(첨부 포함) 내려받기</td><td>백엔드</td><td>2.5</td></tr>
+                  <tr><td rowspan="2">알림톡 연동</td><td>발송 대행사 API·템플릿 연동</td><td>백엔드</td><td>1.5</td></tr>
+                  <tr><td>발송 큐·이력·실패 재시도·문자 대체 발송</td><td>백엔드</td><td>1.5</td></tr>
+                  <tr><td rowspan="3">인프라/배포</td><td>테스트·운영 서버, DB, 저장공간 구성</td><td>인프라</td><td>2</td></tr>
+                  <tr><td>CI/CD (자동 테스트 통과 시에만 배포)</td><td>인프라</td><td>1</td></tr>
+                  <tr><td>백업·모니터링·장애 알림 설정</td><td>인프라</td><td>1</td></tr>
+                  <tr><td rowspan="3">QA/문서</td><td>서류 항목 커버리지 자동 테스트·출력 대조</td><td>QA</td><td>2</td></tr>
+                  <tr><td>통합 테스트·역할별 권한 테스트·현장 시범 운영 지원</td><td>QA</td><td>1.5</td></tr>
+                  <tr><td>기본 운영 안내 문서·DB 스키마 문서·인수인계</td><td>QA</td><td>1.5</td></tr>
+                </tbody>
+              </table></div>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>버퍼 10~15% 포함</li>
+                <li>유사 프로젝트(승인 워크플로우·역할 권한·현장 기록 관리) 수행 경험 기반 효율적 개발</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: PRD ═══════════════ -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>프로젝트 요구사항을 정의하고 기능 범위를 명확히 합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <ul>
+                <li><strong>현재 문제</strong>: 공장·플랜트 현장에서 작업 배정, 안전 확인, 완료 보고, 각종 안전 서류 작성이 따로 이루어져 기록이 흩어지고 누락 위험이 있습니다.</li>
+                <li><strong>목표</strong>: 작업 배정부터 안전 확인, 완료 보고, 서류 관리까지 한곳에서 처리해 현장 업무를 전산화합니다.</li>
+                <li><strong>서비스 형태</strong>: 관리자 PC 웹 + 작업자 모바일 웹(카카오 알림톡 링크 진입, 앱 설치 없음)</li>
+                <li><strong>성공 기준</strong>: ① 작업 등록 → 알림톡 → 안전 확인·개인 승인 → 업체 승인 → 완료 보고가 끝까지 동작하고 기록이 자동으로 남음 ② 전달받은 서류 양식의 항목 100%가 화면·저장·출력에 대응 (커버리지 리포트) ③ 고객사·현장별 데이터가 섞이지 않음 ④ 발주사가 문서만으로 운영·재배포 가능</li>
+              </ul>
+
+              <h2>2. 사용자 정의</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>관리자</td><td>고객사·현장 전체 운영 담당 (PC)</td><td>고객사·현장·사용자 관리, 권한 설정, 전체 대시보드, 공지·비상연락망</td></tr>
+                  <tr><td>작업관리자</td><td>작업 등록·배정 담당 (PC·모바일)</td><td>작업 등록·배정, 안전장비 지정, 업체 승인, 진행 현황, 완료 확인</td></tr>
+                  <tr><td>안전관리자</td><td>안전 확인·서류 검토 담당 (PC)</td><td>작업허가 검토·승인·보완 요청, TBM·교육·점검 일지 관리, 서류 내려받기</td></tr>
+                  <tr><td>협력업체</td><td>보수작업 수행 업체 (PC·모바일)</td><td>작업허가 신청(신청서·명단·위험성평가), 소속 작업자 관리, 업체 작업관리자 승인</td></tr>
+                  <tr><td>작업자</td><td>현장 작업 수행자 (모바일)</td><td>알림톡 링크 진입, 안전 확인·개인 승인, 완료 보고, 긴급작업 접수, 공지·비상연락망 조회</td></tr>
+                </tbody>
+              </table></div>
+
+              <h2>3. 기능 요구사항</h2>
+              <h3>3.1 인증·권한·기준정보</h3>
+              <ul>
+                <li><strong>[필수]</strong> 관리자·작업관리자·안전관리자·협력업체 계정 로그인, 작업자 일회용 보안 링크 + 휴대전화 뒷자리 확인</li>
+                <li><strong>[필수]</strong> 5종 역할별 권한, 고객사·현장별 정보·권한 분리</li>
+                <li><strong>[필수]</strong> 현장·협력업체·작업자 정보 관리 (엑셀 일괄 등록), 안전장비 목록 관리</li>
+              </ul>
+              <h3>3.2 작업 등록·배정·안전 확인</h3>
+              <ul>
+                <li><strong>[필수]</strong> 작업 등록·배정 (작업 내용, 위치, 일시, 착용 안전장비, 위험 요소)</li>
+                <li><strong>[필수]</strong> 배정 시 등록된 전화번호로 알림톡 발송 (작업 내용 + 안전장비 + 확인 링크)</li>
+                <li><strong>[필수]</strong> 작업자 모바일: 안전 내용 확인 → 개인별 승인(서명) → 업체 작업관리자 승인 → 작업 시작</li>
+                <li><strong>[필수]</strong> 완료 보고 (사진·메모), 작업관리자 확인 후 종료, 전 과정 시각·작성자 자동 기록</li>
+                <li><strong>[필수]</strong> 진행 현황 대시보드 (현장별 상태, 미확인 작업자, 지연 작업)</li>
+              </ul>
+              <h3>3.3 협력업체 작업허가</h3>
+              <ul>
+                <li><strong>[필수]</strong> 보수작업 신청서·작업자 명단·위험성평가 제출</li>
+                <li><strong>[필수]</strong> 담당자 검토 → 승인 / 보완 요청(사유) → 재제출, 단계별 이력 보관</li>
+              </ul>
+              <h3>3.4 안전일지·점검서류</h3>
+              <ul>
+                <li><strong>[필수]</strong> TBM(작업 전 안전회의), 교육, 점검 일지와 확인 기록 작성·서명·보관</li>
+                <li><strong>[필수]</strong> 양식 정의 기반 화면 생성, 필수 항목 미입력 시 제출 불가, 양식 버전 관리</li>
+                <li><strong>[필수]</strong> 문서·첨부자료 엑셀 / 파일 묶음(ZIP) 내려받기 (기간·현장·양식별)</li>
+                <li><strong>[선택]</strong> 원본 양식 레이아웃 PDF 출력</li>
+              </ul>
+              <h3>3.5 긴급작업·공지</h3>
+              <ul>
+                <li><strong>[필수]</strong> 긴급 보수작업 접수 → 담당자 알림 → 조치 결과 기록</li>
+                <li><strong>[필수]</strong> 공지사항(현장별 대상 지정), 비상연락망 — 현장 구성원 조회</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>완전성 (QC)</td><td>서류 항목 추적표 기준 항목 100% 대응, 항목 커버리지 자동 테스트 통과 시에만 배포</td></tr>
+                  <tr><td>무결성</td><td>서명·승인 완료 기록 수정 불가, 정정 이력 보관, 양식 버전별 원본 보존</td></tr>
+                  <tr><td>보안</td><td>HTTPS, 역할·현장 단위 접근 제어, 일회용 링크 만료, 개인정보(전화번호) 암호화 저장, 관리자 접속 기록</td></tr>
+                  <tr><td>성능</td><td>동시접속 40명 기준 주요 화면 2초 이내, 알림톡 배정 후 1분 이내 발송</td></tr>
+                  <tr><td>사용성</td><td>작업자 화면은 모바일 우선, 큰 터치 영역, 3단계 이내 완료, 카카오톡 인앱 브라우저 대응</td></tr>
+                  <tr><td>운영</td><td>일일 자동 백업, 장애 알림, 테스트/운영 서버 분리, 보존 기간 3년 이상 기준 보관</td></tr>
+                </tbody>
+              </table></div>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>카카오 비즈니스 채널·발신 프로필·알림톡 템플릿 검수 필요 → 착수 1~2주 차 신청</li>
+                <li>안전 일지·점검서류 상세 양식은 클라이언트 준비 중 → Day 14 워크숍에서 항목 정의서 작성, Day 21 확정</li>
+                <li>AWS·도메인·카카오 채널 계정은 발주사 명의 생성 권장 (권한 위임 방식)</li>
+                <li>알림톡 발송료·대행사 이용료는 발주사 부담 (견적 제외)</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>네이티브 앱(iOS·Android) 개발</li>
+                <li>출입통제·ERP 등 외부 시스템 연동</li>
+                <li>공인 본인인증(PASS 등) — 필요 시 옵션</li>
+                <li>다국어(외국인 작업자) 지원 — 필요 시 옵션</li>
+                <li>법령 해석·법률 자문 (양식 항목은 발주사 확정 기준)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: 일정 제안 ═══════════════ -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 90일 기준 단계별 마일스톤 및 산출물을 제안합니다. 기획·디자인과 개발을 일부 겹쳐 진행해 일정을 지킵니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 기획·설계</td><td>Day 1–21</td><td>요구사항 정의서, 화면 설계서, 서류 항목 추적표 v1, ERD</td></tr>
+                  <tr><td>Phase 2: UI/UX 디자인</td><td>Day 15–35</td><td>Figma 디자인 (관리자 PC·모바일)</td></tr>
+                  <tr><td>Phase 3: 개발 1차 — 기반·핵심 흐름</td><td>Day 22–56</td><td>테스트 서버, 작업 배정 → 알림톡 → 안전 확인·승인 → 완료 보고 시연</td></tr>
+                  <tr><td>Phase 4: 개발 2차 — 작업허가·서류·긴급작업</td><td>Day 50–75</td><td>전체 기능 베타, 항목 커버리지 리포트 v1</td></tr>
+                  <tr><td>Phase 5: QA·시범 운영·운영 배포</td><td>Day 76–90</td><td>운영 서버 배포, 최종 커버리지 리포트, 소스코드·문서 일체</td></tr>
+                </tbody>
+              </table></div>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">기획·설계</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 1–21</p>
+                <p class="text-sm leading-7 text-slate-600">요구사항 정의, 업무 흐름도, 화면 설계서, Day 14 서류 양식 워크숍(항목 정의서 작성), 서류 항목 추적표 v1, ERD·API 설계, 카카오 채널·알림톡 템플릿 신청 안내</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500"><li>산출물: 요구사항 정의서, 화면 설계서, 서류 항목 추적표 v1, ERD</li></ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">UI/UX 디자인</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 15–35</p>
+                <p class="text-sm leading-7 text-slate-600">디자인 시스템, 작업자 모바일 화면(우선), 관리자 PC 화면 — 설계 확정 화면부터 순차 진행</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500"><li>산출물: Figma 디자인</li></ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">개발 1차 — 기반·핵심 흐름</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 22–56</p>
+                <p class="text-sm leading-7 text-slate-600">테스트 서버 구축, 인증·5종 권한·현장별 분리, 기준정보 관리, 작업 등록·배정, 알림톡 실발송, 모바일 안전 확인·개인 승인·업체 승인·완료 보고, 대시보드 1차</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500"><li>산출물: 테스트 서버에서 핵심 흐름 시연 (Day 49)</li></ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">개발 2차 — 작업허가·서류·긴급작업</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 50–75</p>
+                <p class="text-sm leading-7 text-slate-600">협력업체 작업허가 신청·검토·보완, 양식 정의 엔진·TBM·교육·점검 일지, 서명·승인 이력, 엑셀·ZIP 내려받기, 긴급작업, 공지·비상연락망, 항목 커버리지 자동 테스트</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500"><li>산출물: 전체 기능 베타, 항목 커버리지 리포트 v1</li></ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 5</p>
+                <h4 class="text-base font-semibold text-slate-900">QA·시범 운영·운영 배포</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 76–90</p>
+                <p class="text-sm leading-7 text-slate-600">현장 시범 운영(실제 작업 1~2건, 종이 서류와 대조 점검), 역할별 권한 테스트, 출력물 대조, 클라이언트 검수, 운영 서버 배포, 운영 안내 문서·인수인계</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500"><li>산출물: 운영 서버, 최종 커버리지 리포트, 소스코드·DB 스키마·화면 설계서·운영 안내 문서</li></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <div class="table-wrap"><table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 설계·항목 확정</td><td>Day 21</td><td>화면 설계서 + 서류 항목 추적표 v1 승인 (안전관리 담당 확인)</td></tr>
+                  <tr><td>M2: 디자인 확정</td><td>Day 35</td><td>관리자 PC·모바일 주요 화면 승인</td></tr>
+                  <tr><td>M3: 핵심 흐름 시연</td><td>Day 49</td><td>작업 등록 → 알림톡 실발송 → 안전 확인·개인 승인 → 업체 승인 → 완료 보고가 테스트 서버에서 동작</td></tr>
+                  <tr><td>M4: 전체 기능 베타</td><td>Day 75</td><td>전체 기능 동작 + 항목 커버리지 리포트 v1 제출</td></tr>
+                  <tr><td>M5: 운영 배포·납품</td><td>Day 90</td><td>시범 운영 대조 점검 완료, 최종 커버리지 리포트(항목 100%), 운영 배포, 산출물 일체 인도</td></tr>
+                </tbody>
+              </table></div>
+
+              <h2>커뮤니케이션 계획</h2>
+              <div class="table-wrap"><table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅 + 진행 보고서</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>서류 양식 워크숍</td><td>화면 공유 + 항목 정의서</td><td>Day 14 (필요 시 추가)</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>테스트 서버 시연 + 문서</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues</td><td>상시</td></tr>
+              </table></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════ PAGE: 포트폴리오 ═══════════════ -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 기능·구조를 구현한 경험과 담당 범위를 소개합니다. 아래 프로젝트 모두 설계부터 개발·인프라·배포까지 전 범위를 담당했습니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">90일</p><p class="mt-1 text-sm text-slate-500">제안 기간</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">73 M/D</p><p class="mt-1 text-sm text-slate-500">총 공수</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">5종</p><p class="mt-1 text-sm text-slate-500">역할별 권한</p></div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur"><p class="text-2xl font-bold text-sky-700">3개월</p><p class="mt-1 text-sm text-slate-500">무상 하자보수</p></div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">현장 기록 · 멀티테넌트 · 알림</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">시니어 주간보호 통합 관리 플랫폼</h3>
+              <p class="mt-1 text-sm text-slate-400">B2B SaaS · 2025 (약 6개월) · 담당: 설계·풀스택 개발·인프라·배포 전 범위</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4><p>주간보호 기관의 돌봄 기록, 투약 관리, 보호자 소통을 하나로 통합한 관리 시스템. 기관별 데이터를 분리하는 멀티테넌트 구조, 140+ API, 6개 플랫폼 지원.</p>
+                <h4>핵심 기능</h4><ul><li>일일 케어 로그(현장 기록 일지) 작성·보관</li><li>기관별 데이터 분리(멀티테넌트), 역할별 권한</li><li>보호자 알림·소통, 전자서명</li><li>AWS 인프라 코드화, 자동 배포</li></ul>
+                <h4>본 프로젝트와의 유사점</h4><p>현장 담당자가 <strong>매일 정해진 항목의 기록 일지를 작성하고 서명·보관</strong>하는 구조, 기관별 데이터 분리와 역할 권한이 본 프로젝트의 TBM·점검 일지, 고객사·현장별 분리와 같습니다. 현장 사용자에게 알림을 보내고 확인받는 흐름도 유사합니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose"><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS CDK</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Docker</span></div>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">승인 워크플로우 · 역할 권한 · 서명</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">기업용 전자결재·업무관리 플랫폼</h3>
+              <p class="mt-1 text-sm text-slate-400">B2B SaaS · 2026.01~2026.03 (약 9주) · 담당: 설계·풀스택 개발·인프라·배포 전 범위</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4><p>다단계 결재 엔진과 규제 보고, 전자서명을 갖춘 기업용 전자결재 SaaS. 50+ 페이지, 120~150 API, 7종 사용자 역할, 외부 셀프서비스 포탈.</p>
+                <h4>핵심 기능</h4><ul><li>다단계 결재 엔진 (승인·반려·보완 요청 등 8종 결재 액션)</li><li>7종 역할 권한(RBAC), 6계층 보안</li><li>전자도장·전자서명, 결재 이력 보관</li><li>토큰 링크 기반 외부 사용자 포탈</li></ul>
+                <h4>본 프로젝트와의 유사점</h4><p><strong>신청 → 검토 → 승인/보완 요청 → 재제출</strong> 결재 흐름이 협력업체 작업허가와 같고, "개인 승인 → 업체 작업관리자 승인 → 작업 시작" 다단계 승인에 그대로 적용됩니다. 토큰 링크로 외부 사용자를 받는 포탈 경험은 <strong>알림톡 링크로 들어오는 작업자 화면</strong>에 직결됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose"><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">CASL (RBAC)</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Docker</span></div>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">규제 서류 양식 · 누락 방지</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">VC 펀드 관리 플랫폼 (규제 보고 양식 포함)</h3>
+              <p class="mt-1 text-sm text-slate-400">핀테크 · 2023.11~2024.12 (14개월) · 담당: 설계·풀스택 개발·인프라·배포 전 범위</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4><p>VC 펀드 운용 전 과정을 관리하는 플랫폼. 감독기관 제출용 규제 보고 양식 5종, 결재 워크플로우, 5계층 보안. 22개 도메인 모듈, 80+ 엔티티.</p>
+                <h4>핵심 기능</h4><ul><li>규제 보고 양식 5종 — 법정 항목 기반 작성·검증·출력</li><li>결재 워크플로우, 변경 이력 관리</li><li>엑셀·문서 출력, 보안·접근 기록</li></ul>
+                <h4>본 프로젝트와의 유사점</h4><p>항목이 많고 <strong>하나라도 빠지면 안 되는 법정 제출 양식</strong>을 화면·저장·출력으로 구현하고 검증한 경험이, 본 프로젝트의 안전일지·점검서류 QC(항목 추적표, 출력 대조)에 그대로 적용됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose"><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS</span></div>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">Python 백엔드 참고</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">P2P 크라우드펀딩 플랫폼 (Python·Django)</h3>
+              <p class="mt-1 text-sm text-slate-400">핀테크 · 2019.12~2020.01 · 담당: UI/UX 리뉴얼·Django 기반 개발</p>
+              <div class="mt-3 doc-content">
+                <p>Python·Django·MySQL 기반, 80+ 엔티티와 15+ 외부 API 연동, 정기 배치 자동화를 운영한 서비스입니다. 이번 제안의 Django 백엔드 선택이 실제 운영 경험에 근거함을 보여 드리기 위해 함께 소개합니다.</p>
+                <div class="flex flex-wrap gap-1.5 not-prose"><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Python</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Django</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span><span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS S3</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <!-- ─── Bottom Page Navigation ─── -->
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 공장·플랜트 작업·안전관리 통합 웹서비스 구축 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <!-- ─── SPA Router ─── -->
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
